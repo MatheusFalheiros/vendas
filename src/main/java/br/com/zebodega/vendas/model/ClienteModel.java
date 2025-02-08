@@ -24,42 +24,50 @@ public class ClienteModel {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id; // Alterado de idCliente para id
+    private Long idCliente;
 
-    @NotBlank(message = "O nome é obrigatório")
-    @Size(max = 255, message = "O nome não pode ultrapassar 255 caracteres")
-    @Column(name = "nome", length = 255, nullable = false)
+    @NotNull(message = "O nome não pode ser nulo.")
+    @NotBlank(message = "O nome é obrigatório.")
+    @Size(message = "O nome máximo não pode ultrapassar 255 caracteres!", max = 255)
+    @Column(name = "nome", nullable = false)
     private String nome;
 
-    @NotBlank(message = "O CPF é obrigatório")
-    @Size(min = 11, max = 11, message = "O CPF deve ter 11 caracteres")
+    @NotNull(message = "O CPF não pode ser nulo.")
+    @NotBlank(message = "O CPF é obrigatório.")
+    @Size(message = "O CPF deve conter exatamente 11 caracteres.", min = 11, max = 11)
+    @CPF(message = "CPF inválido. Verifique o valor informado.")
     @Column(name = "cpf", length = 11, nullable = false, unique = true)
-    @CPF(message = "CPF inválido!")
     private String cpf;
 
-    @NotBlank(message = "O e-mail é obrigatório")
-    @Email(message = "E-mail inválido!")
+    @NotNull(message = "O e-mail não pode ser nulo.")
+    @NotBlank(message = "O e-mail é obrigatório.")
+    @Email(message = "E-mail inválido. Verifique o valor informado.")
     @Column(name = "email", length = 255, nullable = false, unique = true)
+    @Email(message = "E-mail inválido. Verifique o valor informado.")
     private String email;
 
-    @NotBlank(message = "O telefone é obrigatório")
-    @Size(max = 14, message = "O telefone não pode ultrapassar 14 caracteres")
-    @Column(name = "telefone", length = 14, nullable = false)
+    @NotNull(message = "O telefone não pode ser nulo.")
+    @NotBlank(message = "O telefone é obrigatório.")
+    @Size(message = "O telefone deve conter exatamente 11 caracteres.", min = 11, max = 11)
+    @Column(name = "telefone", length = 11, nullable = false, unique = true)
     private String telefone;
 
-    @NotNull(message = "A data de nascimento não pode ser nula")
-    @Past(message = "A data de nascimento deve ser anterior à data atual")
+    @NotNull(message = "A data de nascimento não pode ser nula.")
+    @Past(message = "A data de nascimento informada deve ser anterior ao dia atual.")
     @Column(name = "dataNascimento", nullable = false)
     private LocalDate dataNascimento;
 
-    @NotBlank(message = "O sexo é obrigatório")
+    @NotNull(message = "O sexo não pode ser nulo.")
+    @NotBlank(message = "O sexo é obrigatório.")
     @Pattern(regexp = "^[MF]$", message = "O sexo deve ser 'M' para masculino ou 'F' para feminino.")
-    @Size(min = 1, max = 1, message = "O sexo deve ter apenas 1 caractere")
+    @Size(min = 1, max = 1, message = "O sexo deve conter apenas 1 caracter (M ou F).")
     @Column(name = "sexo", length = 1, nullable = false)
     private String sexo;
 
-    @Size(max = 255, message = "O apelido não pode ultrapassar 255 caracteres")
-    @Column(name = "apelido", length = 255)
+    @NotBlank(message = "O apelido é obrigatório!")
+    @NotNull(message = "O apelido não pode ser nulo!")
+    @Size(message = "O apelido máximo não pode ultrapassar 255 caracteres!", max = 255)
+    @Column(name = "apelido", length = 255, nullable = true)
     private String apelido;
 
     /**

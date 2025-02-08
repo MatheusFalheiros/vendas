@@ -18,13 +18,21 @@ import java.util.List;
 @RequestMapping("/cliente")  // Corrigido o caminho para "/api/clientes"
 public class ClienteController {
 
+    /**
+     * Instância do serviço de clientes, responsável por encapsular a lógica de negócios
+     * e intermediar as operações entre o controlador e o repositório.
+     */
+
     @Autowired
     private ClienteService clienteService;
 
     /**
      * Obtém a lista de todos os clientes cadastrados.
+     *
+     * @return Lista de ClienteDTO representando os clientes cadastrados.
      */
-    @GetMapping
+
+    @GetMapping()
     public ResponseEntity<List<ClienteDTO>> obterTodos() {
         List<ClienteDTO> clienteDTOList = clienteService.obterTodos();
         return ResponseEntity.ok(clienteDTOList);
@@ -36,12 +44,14 @@ public class ClienteController {
     @GetMapping("/{id}")
     public ResponseEntity<ClienteDTO> obterPorId(@PathVariable Long id) {
         ClienteDTO clienteDTO = clienteService.obterPorId(id);
-        return ResponseEntity.ok(clienteDTO);
+        return ResponseEntity.status(HttpStatus.OK).body(clienteDTO);
     }
 
     /**
      * Salva um novo cliente na base de dados.
+     * @return ClienteDTO representando o cliente salvo.
      */
+
     @PostMapping
     public ResponseEntity<ClienteDTO> salvar(@Valid @RequestBody ClienteModel novoCliente) {
         ClienteDTO novoClienteDTO = clienteService.salvar(novoCliente);
@@ -50,20 +60,20 @@ public class ClienteController {
 
     /**
      * Atualiza os dados de um cliente existente.
+     * @return ClienteDTO representando o cliente atualizado.
      */
+
     @PutMapping("/{id}") // Agora a atualização exige o ID na URL
-    public ResponseEntity<ClienteDTO> atualizar(@PathVariable Long id, @Valid @RequestBody ClienteModel clienteAtualizado) {
-        clienteAtualizado.setId(id); // Alterado para setId(id)
-        ClienteDTO clienteAtualizadoDTO = clienteService.atualizar(clienteAtualizado);
-        return ResponseEntity.ok(clienteAtualizadoDTO);
+    public ResponseEntity<ClienteDTO> atualizar(@Valid @RequestBody ClienteModel clienteExistente) {
+        ClienteDTO clienteExistenteDTO = clienteService.atualizar(clienteExistente);
+        return ResponseEntity.status(HttpStatus.OK).body(clienteExistenteDTO);
     }
 
     /**
      * Deleta um cliente da base de dados pelo ID.
      */
     @DeleteMapping("/{id}") // Agora a exclusão ocorre pelo ID na URL
-    public ResponseEntity<Void> deletar(@PathVariable Long id) {
-        clienteService.deletar(id);  // Agora o método recebe apenas o ID
-        return ResponseEntity.noContent().build();
+    public void deletar(@Valid @RequestBody ClienteModel clienteModel) {
+        clienteService.deletar(clienteModel);
     }
 }
