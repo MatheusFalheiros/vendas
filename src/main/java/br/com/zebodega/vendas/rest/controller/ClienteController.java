@@ -15,7 +15,7 @@ import java.util.List;
  * Controlador responsável por gerenciar as operações relacionadas aos clientes.
  */
 @RestController
-@RequestMapping("/cliente")  // Corrigido o caminho para "/api/clientes"
+@RequestMapping("/cliente")
 public class ClienteController {
 
     /**
