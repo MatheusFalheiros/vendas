@@ -12,7 +12,7 @@ import java.util.List;
  * Controlador responsável por gerenciar as operações relacionadas aos pedidos.
  */
 @RestController
-@RequestMapping("/api/pedidos")  // Ajustando o caminho para /api/pedidos
+@RequestMapping("/pedido")  // Ajustando o caminho para /pedido
 public class PedidoController {
 
     @Autowired
