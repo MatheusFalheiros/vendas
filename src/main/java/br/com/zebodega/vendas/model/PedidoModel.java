@@ -6,7 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.modelmapper.ModelMapper;
-import br.com.zebodega.vendas.rest.PedidoDTO;
+import br.com.zebodega.vendas.rest.dto.PedidoDTO;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

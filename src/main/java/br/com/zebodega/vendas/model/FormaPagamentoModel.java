@@ -1,6 +1,6 @@
 package br.com.zebodega.vendas.model;
 
-import br.com.zebodega.vendas.rest.FormaPagamentoDTO;
+import br.com.zebodega.vendas.rest.dto.FormaPagamentoDTO;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

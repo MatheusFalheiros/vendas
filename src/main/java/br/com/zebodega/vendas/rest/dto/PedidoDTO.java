@@ -1,4 +1,4 @@
-package br.com.zebodega.vendas.rest;
+package br.com.zebodega.vendas.rest.dto;
 
 
 import br.com.zebodega.vendas.model.PedidoModel;

@@ -1,7 +1,7 @@
 package br.com.zebodega.vendas.rest.controller;
 
 import br.com.zebodega.vendas.model.PedidoModel;
-import br.com.zebodega.vendas.rest.PedidoDTO;
+import br.com.zebodega.vendas.rest.dto.PedidoDTO;
 import br.com.zebodega.vendas.service.PedidoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

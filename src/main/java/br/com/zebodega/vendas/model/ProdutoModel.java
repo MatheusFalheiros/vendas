@@ -1,6 +1,6 @@
 package br.com.zebodega.vendas.model;
 
-import br.com.zebodega.vendas.rest.ProdutoDTO;
+import br.com.zebodega.vendas.rest.dto.ProdutoDTO;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;

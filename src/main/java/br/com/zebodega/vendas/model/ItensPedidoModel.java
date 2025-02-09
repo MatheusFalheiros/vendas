@@ -1,6 +1,6 @@
 package br.com.zebodega.vendas.model;
 
-import br.com.zebodega.vendas.rest.ItensPedidoDTO;
+import br.com.zebodega.vendas.rest.dto.ItensPedidoDTO;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;

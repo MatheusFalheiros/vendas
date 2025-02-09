@@ -1,7 +1,7 @@
 package br.com.zebodega.vendas.rest.controller;
 
 import br.com.zebodega.vendas.model.ClienteModel;
-import br.com.zebodega.vendas.rest.ClienteDTO;
+import br.com.zebodega.vendas.rest.dto.ClienteDTO;
 import br.com.zebodega.vendas.service.ClienteService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,8 +1,10 @@
 package br.com.zebodega.vendas.service;
 
 import br.com.zebodega.vendas.exception.*;
+import br.com.zebodega.vendas.model.ClienteModel;
 import br.com.zebodega.vendas.model.UsuarioModel;
 import br.com.zebodega.vendas.repository.UsuarioRepository;
+import br.com.zebodega.vendas.rest.ClienteDTO;
 import br.com.zebodega.vendas.rest.UsuarioDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,72 +17,101 @@ import java.util.stream.Collectors;
 public class UsuarioService {
 
     @Autowired
-    private UsuarioRepository usuarioRepository;
+    private UsuarioRepository  usuarioRepository;
 
     @Transactional(readOnly = true)
     public UsuarioDTO obterPorId(Long id) {
         UsuarioModel usuario = usuarioRepository.findById(id)
-                .orElseThrow(() -> new ObjectNotFoundException("Usuário com ID " + id + " não encontrado."));
+                .orElseThrow(() -> new ObjectNotFoundException("Usuario com ID " + id + " não encontrado."));
         return usuario.toDTO();
     }
 
     @Transactional(readOnly = true)
-    public List<UsuarioDTO> obterTodos() {
+    public List<UsuarioDTO> obterTodos(){
+
         List<UsuarioModel> listaUsuarios = usuarioRepository.findAll();
-        return listaUsuarios.stream().map(UsuarioModel::toDTO).collect(Collectors.toList());
+
+        return listaUsuarios.stream().map(usuarioModel -> usuarioModel.toDTO())
+                .collect(Collectors.toList());
     }
 
     @Transactional
-    public UsuarioDTO salvar(UsuarioModel novoUsuario) {
-        validarUsuario(novoUsuario);
-        return usuarioRepository.save(novoUsuario).toDTO();
-    }
+    public UsuarioDTO salvar(UsuarioModel novoUsuario){
 
-    @Transactional
-    public UsuarioDTO atualizar(UsuarioModel usuarioExistente) {
-        validarUsuarioExistente(usuarioExistente);
-        return usuarioRepository.save(usuarioExistente).toDTO();
-    }
 
-    @Transactional
-    public void deletar(UsuarioModel usuarioExistente) {
-        validarUsuarioExistente(usuarioExistente);
-        usuarioRepository.delete(usuarioExistente);
-    }
-
-    private void validarUsuario(UsuarioModel usuario) {
         try {
-            if (usuarioRepository.existsByCliente(usuario.getCliente())) {
-                throw new ConstraintException("Já existe um usuário cadastrado com o id cliente " + usuario.getCliente() + " !");
+            // Caso ocorra a tentaiva de salvar um usuário com o id cliente já existente, mostre a exceção abaixo.
+            if (usuarioRepository.existsByCliente(novoUsuario.getCliente())) {
+                throw new ConstraintException("Já existe um usuário cadastrado com esse id" + novoUsuario.getCliente() + " !");
             }
-        } catch (ConstraintException e) {
-            handleException(e, "Erro ao salvar o usuário");
-        } catch (Exception e) {
-            handleException(e, "Erro ao salvar o usuário");
+
+            return usuarioRepository.save(novoUsuario).toDTO();
+        }catch (DataIntegrityException e ){
+            throw new DataIntegrityException("Erro! Não foi possível criar um novo usuário! " + novoUsuario.getCliente());
+        }catch (ConstraintException e){
+            if (e.getMessage() == null || e.getMessage().isBlank()) {
+                throw new ConstraintException("Erro de restrição de integridade ao salvar o usuario " + novoUsuario.getCliente() + ".");
+            }
+            throw e;
+        }catch (BusinessRuleException e){
+            throw  new BusinessRuleException("Erro! Não foi possível criar um novo usuário " + novoUsuario.getCliente() + ",pois violou uma regra de negócio");
+        }catch (SQLException e) {
+            throw new SQLException("Erro! Não foi possível criar um novo usuário" + novoUsuario.getCliente() + ", pois houve um erro de conexão com o banco de dados");
         }
     }
 
-    private void validarUsuarioExistente(UsuarioModel usuario) {
+    @Transactional
+    public UsuarioDTO atualizar(UsuarioModel usuarioExistente){
+
+
         try {
-            if (!usuarioRepository.existsByCliente(usuario.getCliente())) {
-                throw new ObjectNotFoundException("Usuário não encontrado com o id cliente " + usuario.getCliente());
+            // Caso ocorra a tentaiva de salvar um usuário com o id cliente já existente, mostre a exceção abaixo.
+            if (!usuarioRepository.existsByCliente(usuarioExistente.getCliente())) {
+                throw new ConstraintException("O usuário " + usuarioExistente.getCliente() + " não foi encontrado!");
             }
-        } catch (Exception e) {
-            handleException(e, "Erro ao atualizar/deletar o usuário");
+
+            return usuarioRepository.save(usuarioExistente).toDTO();
+        }catch (DataIntegrityException e ){
+            throw new DataIntegrityException("Erro! Não foi possível atualizar o usuário! " + usuarioExistente.getCliente());
+        }catch (ConstraintException e){
+            if (e.getMessage() == null || e.getMessage().isBlank()) {
+                throw new ConstraintException("Erro ao atualizar o usuario " + usuarioExistente.getCliente() + ": Restrição de integridade de dados.");
+            }
+            throw e;
+        }catch (BusinessRuleException e){
+            throw  new BusinessRuleException("Erro! Não foi possível atualizar o usuário " + usuarioExistente.getCliente() + ",pois violou uma regra de negócio");
+        }catch (SQLException e) {
+            throw new SQLException("Erro! Não foi possível atualizar o usuário" + usuarioExistente.getCliente() + ", pois houve um erro de conexão com o banco de dados");
+        }catch (ObjectNotFoundException e){
+            throw new ObjectNotFoundException("Erro! não foi possível localizar o usuário " + usuarioExistente.getCliente() + " no banco de dados");
         }
     }
 
-    private void handleException(Exception e, String messagePrefix) {
-        if (e instanceof ConstraintException) {
-            throw new ConstraintException(messagePrefix + ": " + e.getMessage());
-        } else if (e instanceof DataIntegrityException) {
-            throw new DataIntegrityException(messagePrefix + " devido a uma violação de integridade de dados.");
-        } else if (e instanceof BusinessRuleException) {
-            throw new BusinessRuleException(messagePrefix + " devido a uma violação de regra de negócios.");
-        } else if (e instanceof SQLException) {
-            throw new SQLException(messagePrefix + " devido a um erro de conexão com o banco de dados.");
-        } else {
-            throw new RuntimeException(messagePrefix + ": " + e.getMessage());
+    @Transactional
+    public void deletar(UsuarioModel usuarioExistente){
+
+
+        try {
+            // Caso ocorra a tentaiva de salvar um usuário com o id cliente já existente, mostre a exceção abaixo.
+            if (!usuarioRepository.existsByCliente(usuarioExistente.getCliente())) {
+                throw new ConstraintException("O usuário " + usuarioExistente.getCliente() + " não foi encontrado!");
+            }
+
+             usuarioRepository.delete(usuarioExistente);
+        }catch (DataIntegrityException e ){
+            throw new DataIntegrityException("Erro! Não foi possível deletar o usuário! " + usuarioExistente.getCliente());
+        }catch (ConstraintException e){
+            if (e.getMessage() == null || e.getMessage().isBlank()) {
+                throw new ConstraintException("Erro ao deletar o usuario " + usuarioExistente.getCliente() + ": Restrição de integridade de dados.");
+            }
+            throw e;
+        }catch (BusinessRuleException e){
+            throw  new BusinessRuleException("Erro! Não foi possível deletar o usuário " + usuarioExistente.getCliente() + ",pois violou uma regra de negócio");
+        }catch (SQLException e) {
+            throw new SQLException("Erro! Não foi possível deletar o usuário" + usuarioExistente.getCliente() + ", pois houve um erro de conexão com o banco de dados");
+        }catch (ObjectNotFoundException e){
+            throw new ObjectNotFoundException("Erro! não foi possível localizar o usuário " + usuarioExistente.getCliente() + " no banco de dados");
         }
     }
+
 }

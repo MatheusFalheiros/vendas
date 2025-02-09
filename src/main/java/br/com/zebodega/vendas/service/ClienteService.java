@@ -3,7 +3,7 @@ package br.com.zebodega.vendas.service;
 import br.com.zebodega.vendas.model.ClienteModel;
 import br.com.zebodega.vendas.exception.*;
 import br.com.zebodega.vendas.repository.ClienteRepository;
-import br.com.zebodega.vendas.rest.ClienteDTO;
+import br.com.zebodega.vendas.rest.dto.ClienteDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
