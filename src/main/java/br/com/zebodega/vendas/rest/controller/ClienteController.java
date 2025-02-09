@@ -22,7 +22,6 @@ public class ClienteController {
      * Instância do serviço de clientes, responsável por encapsular a lógica de negócios
      * e intermediar as operações entre o controlador e o repositório.
      */
-
     @Autowired
     private ClienteService clienteService;
 
@@ -31,7 +30,6 @@ public class ClienteController {
      *
      * @return Lista de ClienteDTO representando os clientes cadastrados.
      */
-
     @GetMapping()
     public ResponseEntity<List<ClienteDTO>> obterTodos() {
         List<ClienteDTO> clienteDTOList = clienteService.obterTodos();
@@ -40,6 +38,9 @@ public class ClienteController {
 
     /**
      * Obtém um cliente pelo ID.
+     *
+     * @param id ID do cliente.
+     * @return ClienteDTO representando o cliente encontrado.
      */
     @GetMapping("/{id}")
     public ResponseEntity<ClienteDTO> obterPorId(@PathVariable Long id) {
@@ -49,9 +50,10 @@ public class ClienteController {
 
     /**
      * Salva um novo cliente na base de dados.
+     *
+     * @param novoCliente ClienteModel contendo os dados do novo cliente.
      * @return ClienteDTO representando o cliente salvo.
      */
-
     @PostMapping
     public ResponseEntity<ClienteDTO> salvar(@Valid @RequestBody ClienteModel novoCliente) {
         ClienteDTO novoClienteDTO = clienteService.salvar(novoCliente);
@@ -60,19 +62,22 @@ public class ClienteController {
 
     /**
      * Atualiza os dados de um cliente existente.
+     *
+     * @param clienteExistente ClienteModel contendo os dados atualizados do cliente.
      * @return ClienteDTO representando o cliente atualizado.
      */
-
-    @PutMapping("/{id}") // Agora a atualização exige o ID na URL
+    @PutMapping
     public ResponseEntity<ClienteDTO> atualizar(@Valid @RequestBody ClienteModel clienteExistente) {
         ClienteDTO clienteExistenteDTO = clienteService.atualizar(clienteExistente);
         return ResponseEntity.status(HttpStatus.OK).body(clienteExistenteDTO);
     }
 
     /**
-     * Deleta um cliente da base de dados pelo ID.
+     * Deleta um cliente da base de dados.
+     *
+     * @param clienteModel ClienteModel contendo os dados do cliente a ser deletado.
      */
-    @DeleteMapping("/{id}") // Agora a exclusão ocorre pelo ID na URL
+    @DeleteMapping
     public void deletar(@Valid @RequestBody ClienteModel clienteModel) {
         clienteService.deletar(clienteModel);
     }

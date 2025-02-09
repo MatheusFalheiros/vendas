@@ -8,7 +8,6 @@ import org.springframework.stereotype.Repository;
  * Repositório responsável por gerenciar as operações de persistência
  * relacionadas à entidade ClienteModel.
  */
-
 @Repository
 public interface ClienteRepository extends JpaRepository<ClienteModel, Long> {
 
@@ -27,5 +26,4 @@ public interface ClienteRepository extends JpaRepository<ClienteModel, Long> {
      * @return {@code true} se existir um cliente com o e-mail fornecido, {@code false} caso contrário.
      */
     boolean existsByEmail(String email);
-
 }

@@ -1,7 +1,7 @@
 package br.com.zebodega.vendas.service;
 
-import br.com.zebodega.vendas.model.ClienteModel;
 import br.com.zebodega.vendas.exception.*;
+import br.com.zebodega.vendas.model.ClienteModel;
 import br.com.zebodega.vendas.repository.ClienteRepository;
 import br.com.zebodega.vendas.rest.dto.ClienteDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +11,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Serviço responsável pelas operações relacionadas aos clientes.
+ */
 @Service
 public class ClienteService {
 
@@ -18,7 +21,6 @@ public class ClienteService {
      * Instância do repositório de clientes, responsável por realizar operações de
      * persistência e consulta diretamente no banco de dados.
      */
-
     @Autowired
     private ClienteRepository clienteRepository;
 
@@ -29,24 +31,26 @@ public class ClienteService {
      * @return ClienteDTO representando o cliente encontrado.
      * @throws ObjectNotFoundException Se o cliente não for encontrado.
      */
-
     @Transactional(readOnly = true)
     public ClienteDTO obterPorId(Long id) {
         ClienteModel cliente = clienteRepository.findById(id)
                 .orElseThrow(() -> new ObjectNotFoundException("Cliente com ID " + id + " não encontrado."));
         return cliente.toDTO();
     }
+
     /**
-            * Obtém a lista de todos os clientes cadastrados.
-            *
-            * @return Lista de ClienteDTO representando os clientes cadastrados.
+     * Obtém a lista de todos os clientes cadastrados.
+     *
+     * @return Lista de ClienteDTO representando os clientes cadastrados.
      */
     @Transactional(readOnly = true)
     public List<ClienteDTO> obterTodos() {
-        return clienteRepository.findAll().stream()
-                .map(ClienteModel::toDTO)
+        List<ClienteModel> listaClientes = clienteRepository.findAll();
+        return listaClientes.stream()
+                .map(clienteModel -> clienteModel.toDTO())
                 .collect(Collectors.toList());
     }
+
     /**
      * Salva um novo cliente na base de dados.
      *
@@ -57,7 +61,6 @@ public class ClienteService {
      * @throws BusinessRuleException  Se houver violação de regra de negócio.
      * @throws SQLException           Se ocorrer falha de conexão com o banco de dados.
      */
-
     @Transactional
     public ClienteDTO salvar(ClienteModel novoCliente) {
         try {
@@ -88,6 +91,7 @@ public class ClienteService {
             throw new SQLException("Erro! Não foi possível salvar o cliente " + novoCliente.getNome() + ". Falha na conexão com o banco de dados!");
         }
     }
+
     /**
      * Atualiza os dados de um cliente existente.
      *
@@ -98,7 +102,6 @@ public class ClienteService {
      * @throws BusinessRuleException  Se houver violação de regra de negócio.
      * @throws SQLException           Se ocorrer falha de conexão com o banco de dados.
      */
-
     @Transactional
     public ClienteDTO atualizar(ClienteModel clienteExistente) {
         try {
@@ -126,6 +129,15 @@ public class ClienteService {
         }
     }
 
+    /**
+     * Deleta um cliente da base de dados.
+     *
+     * @param clienteExistente ClienteModel contendo os dados do cliente a ser deletado.
+     * @throws ConstraintException    Se o CPF não existir.
+     * @throws DataIntegrityException Se ocorrer violação de integridade.
+     * @throws BusinessRuleException  Se houver violação de regra de negócio.
+     * @throws SQLException           Se ocorrer falha de conexão com o banco de dados.
+     */
     @Transactional
     public void deletar(ClienteModel clienteExistente) {
         try {
