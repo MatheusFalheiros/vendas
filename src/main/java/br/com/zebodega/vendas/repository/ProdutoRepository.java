@@ -10,11 +10,14 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface ProdutoRepository extends JpaRepository<ProdutoModel, Long> {
+
     /**
-     * Verifica se existe um produto cadastrado com o nome especificado.
+     * Verifica se existe um produto cadastrado com o nome especificado,
+     * ignorando maiúsculas e minúsculas.
      *
-     * @param nome  a ser verificado.
-     * @return {@code true} se existir nome fornecido, {@code false} caso contrário.
+     * @param nome o nome do produto a ser verificado.
+     * @return {@code true} se existir um produto com o nome fornecido,
+     *         {@code false} caso contrário.
      */
-    boolean existsByNome(String nome);
+    boolean existsByNomeIgnoreCase(String nome);
 }

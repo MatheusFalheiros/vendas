@@ -11,9 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * Serviço responsável pelas operações relacionadas as Formas de pagamento.
- */
 @Service
 public class FormaPagamentoService {
 
@@ -23,94 +20,65 @@ public class FormaPagamentoService {
     @Transactional(readOnly = true)
     public FormaPagamentoDTO obterPorId(Long id) {
         FormaPagamentoModel formaPagamento = formaPagamentoRepository.findById(id)
-                .orElseThrow(() -> new ObjectNotFoundException("Forma de pagamento com ID " + id + " não encontrado."));
+                .orElseThrow(() -> new ObjectNotFoundException("Forma de pagamento com ID " + id + " não encontrada."));
         return formaPagamento.toDTO();
     }
 
     @Transactional(readOnly = true)
-    public List<FormaPagamentoDTO> obterTodos(){
+    public List<FormaPagamentoDTO> obterTodos() {
         List<FormaPagamentoModel> listaFormaPagamentos = formaPagamentoRepository.findAll();
-
-        return listaFormaPagamentos.stream().map(formaPagamentoModel -> formaPagamentoModel.toDTO())
+        return listaFormaPagamentos.stream()
+                .map(FormaPagamentoModel::toDTO)
                 .collect(Collectors.toList());
     }
 
     @Transactional
-    public FormaPagamentoDTO salvar(FormaPagamentoModel novaFormaPagamento){
-
-        try {
-            // Caso ocorra a tentaiva de salvar uma forma de pagamento com o id já existente, mostre a exceção abaixo.
-            if (formaPagamentoRepository.existsByIdFormaPagamento(novaFormaPagamento.getIdFormaPagamento())) {
-                throw new ConstraintException("Já existe uma forma de pagamento cadastrado com esse id" + novaFormaPagamento.getIdFormaPagamento() + " !");
-            }
-
-            return formaPagamentoRepository.save(novaFormaPagamento).toDTO();
-        }catch (DataIntegrityException e ){
-            throw new DataIntegrityException("Erro! Não foi possível criar uma nova forma de pagamento! " + novaFormaPagamento.getIdFormaPagamento());
-        }catch (ConstraintException e){
-            if (e.getMessage() == null || e.getMessage().isBlank()) {
-                throw new ConstraintException("Erro de restrição de integridade ao salvar a forma de pagamento " + novaFormaPagamento.getIdFormaPagamento() + ".");
-            }
-            throw e;
-        }catch (BusinessRuleException e){
-            throw  new BusinessRuleException("Erro! Não foi possível criar uma nova forma de pagamento " + novaFormaPagamento.getIdFormaPagamento() + ",pois violou uma regra de negócio");
-        }catch (SQLException e) {
-            throw new SQLException("Erro! Não foi possível criar uma nova forma de pagamento" + novaFormaPagamento.getIdFormaPagamento() + ", pois houve um erro de conexão com o banco de dados");
-        }
+    public FormaPagamentoDTO salvar(FormaPagamentoModel novaFormaPagamento) {
+        verificarExistenciaPorId(novaFormaPagamento.getIdFormaPagamento(), false);
+        return salvarOuAtualizarFormaPagamento(novaFormaPagamento);
     }
 
     @Transactional
-    public FormaPagamentoDTO atualizar(FormaPagamentoModel formaPagamentoExistente){
-
-
-        try {
-            // Caso ocorra a tentaiva de salvar uma forma de pagamento com o id já existente, mostre a exceção abaixo.
-            if (!formaPagamentoRepository.existsByIdFormaPagamento(formaPagamentoExistente.getIdFormaPagamento())) {
-                throw new ConstraintException("A forma de pagamento " + formaPagamentoExistente.getIdFormaPagamento() + " não foi encontrada!");
-            }
-
-            return formaPagamentoRepository.save(formaPagamentoExistente).toDTO();
-        }catch (DataIntegrityException e ){
-            throw new DataIntegrityException("Erro! Não foi possível atualizar a forma de pagamento! " + formaPagamentoExistente.getIdFormaPagamento());
-        }catch (ConstraintException e){
-            if (e.getMessage() == null || e.getMessage().isBlank()) {
-                throw new ConstraintException("Erro ao atualizar a Forma de pagamento " + formaPagamentoExistente.getIdFormaPagamento() + ": Restrição de integridade de dados.");
-            }
-            throw e;
-        }catch (BusinessRuleException e){
-            throw  new BusinessRuleException("Erro! Não foi possível atualizar a forma de pagamento " + formaPagamentoExistente.getIdFormaPagamento() + ",pois violou uma regra de negócio");
-        }catch (SQLException e) {
-            throw new SQLException("Erro! Não foi possível atualizar a forma de pagamento" + formaPagamentoExistente.getIdFormaPagamento() + ", pois houve um erro de conexão com o banco de dados");
-        }catch (ObjectNotFoundException e){
-            throw new ObjectNotFoundException("Erro! não foi possível localizar a forma de pagamento " + formaPagamentoExistente.getIdFormaPagamento() + " no banco de dados");
-        }
+    public FormaPagamentoDTO atualizar(FormaPagamentoModel formaPagamentoExistente) {
+        verificarExistenciaPorId(formaPagamentoExistente.getIdFormaPagamento(), true);
+        return salvarOuAtualizarFormaPagamento(formaPagamentoExistente);
     }
 
     @Transactional
-    public void deletar(FormaPagamentoModel formaPagamentoExistente){
-
-
+    public void deletar(FormaPagamentoModel formaPagamentoExistente) {
+        verificarExistenciaPorId(formaPagamentoExistente.getIdFormaPagamento(), true);
         try {
-            // Caso ocorra a tentaiva de salvar uma forma de pagamento com o id já existente, mostre a exceção abaixo.
-            if (!formaPagamentoRepository.existsByIdFormaPagamento(formaPagamentoExistente.getIdFormaPagamento())) {
-                throw new ConstraintException("A forma de pagamento " + formaPagamentoExistente.getIdFormaPagamento() + " não foi encontrada!");
-            }
-
             formaPagamentoRepository.delete(formaPagamentoExistente);
-        }catch (DataIntegrityException e ){
-            throw new DataIntegrityException("Erro! Não foi possível deletar a forma de pagamento! " + formaPagamentoExistente.getIdFormaPagamento());
-        }catch (ConstraintException e){
-            if (e.getMessage() == null || e.getMessage().isBlank()) {
-                throw new ConstraintException("Erro ao deletar a forma de pagamento " + formaPagamentoExistente.getIdFormaPagamento() + ": Restrição de integridade de dados.");
-            }
-            throw e;
-        }catch (BusinessRuleException e){
-            throw  new BusinessRuleException("Erro! Não foi possível deletar a forma de pagamento " + formaPagamentoExistente.getIdFormaPagamento() + ",pois violou uma regra de negócio");
-        }catch (SQLException e) {
-            throw new SQLException("Erro! Não foi possível deletar a forma de pagamento" + formaPagamentoExistente.getIdFormaPagamento() + ", pois houve um erro de conexão com o banco de dados");
-        }catch (ObjectNotFoundException e){
-            throw new ObjectNotFoundException("Erro! não foi possível localizar a forma de pagamento " + formaPagamentoExistente.getIdFormaPagamento() + " no banco de dados");
+        } catch (DataIntegrityException e) {
+            throw new DataIntegrityException("Erro ao deletar a forma de pagamento " + formaPagamentoExistente.getIdFormaPagamento());
+        } catch (SQLException e) {
+            throw new SQLException("Erro de conexão ao deletar a forma de pagamento " + formaPagamentoExistente.getIdFormaPagamento());
         }
     }
 
+    // Método auxiliar para verificar existência de forma de pagamento
+    private void verificarExistenciaPorId(Long id, boolean deveExistir) {
+        boolean exists = formaPagamentoRepository.existsByIdFormaPagamento(id);
+        if (deveExistir && !exists) {
+            throw new ObjectNotFoundException("Forma de pagamento com ID " + id + " não encontrada.");
+        }
+        if (!deveExistir && exists) {
+            throw new ConstraintException("Já existe uma forma de pagamento com ID " + id + ".");
+        }
+    }
+
+    // Método auxiliar para salvar ou atualizar forma de pagamento
+    private FormaPagamentoDTO salvarOuAtualizarFormaPagamento(FormaPagamentoModel formaPagamento) {
+        try {
+            return formaPagamentoRepository.save(formaPagamento).toDTO();
+        } catch (DataIntegrityException e) {
+            throw new DataIntegrityException("Erro ao salvar/atualizar a forma de pagamento " + formaPagamento.getIdFormaPagamento());
+        } catch (ConstraintException e) {
+            throw new ConstraintException("Erro de restrição ao salvar/atualizar a forma de pagamento " + formaPagamento.getIdFormaPagamento());
+        } catch (BusinessRuleException e) {
+            throw new BusinessRuleException("Violação de regra de negócio ao salvar/atualizar a forma de pagamento " + formaPagamento.getIdFormaPagamento());
+        } catch (SQLException e) {
+            throw new SQLException("Erro de conexão ao salvar/atualizar a forma de pagamento " + formaPagamento.getIdFormaPagamento());
+        }
+    }
 }

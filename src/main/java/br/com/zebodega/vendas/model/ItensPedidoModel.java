@@ -24,6 +24,7 @@ public class ItensPedidoModel {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idItensPedido;
 
+    @NotNull(message = "O valor não pode ser nulo")
     @Min(value = 1, message = "A quantidade deve ser maior que zero")
     @Column(name = "quantidade", nullable = false)
     private int quantidade;

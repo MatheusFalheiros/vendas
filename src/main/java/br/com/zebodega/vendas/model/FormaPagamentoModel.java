@@ -17,7 +17,7 @@ import org.modelmapper.ModelMapper;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "FormasPagamento") // Melhor prática para tabelas no plural
+@Table(name = "FormasPagamento")
 public class FormaPagamentoModel {
 
     @Id

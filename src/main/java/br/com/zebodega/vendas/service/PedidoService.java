@@ -56,6 +56,13 @@ public class PedidoService {
         pedidoRepository.delete(pedidoExistente);
     }
 
+    /**
+     * Calcula o faturamento total dos pedidos ativos em um determinado período.
+     *
+     * @param dataInicial Data de início da busca.
+     * @param dataFinal Data de fim da busca.
+     * @return Faturamento total no período.
+     */
     @Transactional(readOnly = true)
     public BigDecimal calcularFaturamentoPeriodo(LocalDate dataInicial, LocalDate dataFinal) {
         if (dataInicial.isAfter(dataFinal)) {
@@ -68,6 +75,12 @@ public class PedidoService {
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
+    /**
+     * Aplica desconto ao pedido, seguindo regras pré-definidas, caso ele esteja ativo.
+     *
+     * @param pedido Pedido ao qual será aplicado o desconto.
+     * @return Novo valor total do pedido após o desconto.
+     */
     @Transactional
     public BigDecimal aplicarDescontoPedido(PedidoModel pedido) {
         if (!"ATIVO".equalsIgnoreCase(pedido.getStatus())) {
@@ -78,9 +91,9 @@ public class PedidoService {
         BigDecimal desconto = BigDecimal.ZERO;
 
         if (valorTotal.compareTo(new BigDecimal("500")) > 0 && valorTotal.compareTo(new BigDecimal("1000")) <= 0) {
-            desconto = valorTotal.multiply(new BigDecimal("0.05"));
+            desconto = valorTotal.multiply(new BigDecimal("0.05")); // 5% de desconto
         } else if (valorTotal.compareTo(new BigDecimal("1000")) > 0) {
-            desconto = valorTotal.multiply(new BigDecimal("0.10"));
+            desconto = valorTotal.multiply(new BigDecimal("0.10")); // 10% de desconto
         }
 
         pedido.setValorTotal(valorTotal.subtract(desconto));
